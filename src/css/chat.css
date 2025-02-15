@@ -1,0 +1,128 @@
+.chat{
+    flex: 0.65;
+    flex-direction: column;
+    display: flex;
+    
+}
+
+.chat .chat__header{
+    display: flex;
+    align-items: center;
+    border-bottom:1px solid lightgray;
+    padding: 10px;
+    
+}
+
+.chat__headerInfo {
+    flex:1;
+    margin-left: 10px;
+    
+}
+
+
+.chat__headerInfo h3{
+    font-size: 16px;
+}
+
+.chat__headerInfo p{
+    font-size: 12px;
+}
+
+.header__right{
+    display: flex;
+    align-items: center;
+}
+
+.header__right{
+    display: flex;
+    align-items: center;
+}
+
+.header__right svg {
+   font-size: 18px;
+}
+
+.chat__body{
+    background-color: black;
+    flex: 1;
+    background-image: url(https://i.imgur.com/TnNwdvV.png);
+    padding: 20px;
+    overflow-y: auto;
+
+}
+
+.chat__body .chat__message{
+    position: relative;
+    background-color: white;
+    width: fit-content;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.chat__name{
+    position: absolute;
+    top: -18px;
+    left: 5px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.chat__time{
+    font-size: 10px;
+    margin-left: 10px;
+}
+
+.chat__receiver{
+    background-color: #d6f8c6 !important;
+    margin-left: auto;
+}
+
+
+.chat__footer {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: white;
+    border-top: 1px solid lightgray;
+}
+
+.chat__footer svg {
+    padding: 10px;
+    color: gray;
+    cursor: pointer;
+}
+
+.chat__footer form {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    border-radius: 20px;
+    padding: 5px;
+    background-color: #f0f0f0;
+}
+
+.chat__footer form input[type='text'] {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px;
+    border-radius: 20px;
+    background-color: white;
+    font-size: 16px;
+}
+
+.chat__footer form input[type='submit'] {
+    display: none;
+}
+
+.emoji-picker-container {
+    position: absolute;
+    bottom: 60px;  /* Posizione sopra il footer */
+    left: 10px;
+    z-index: 100;
+    background-color: white;  /* Opzionale: Per farlo risaltare */
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
