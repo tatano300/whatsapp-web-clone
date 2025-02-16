@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import { Avatar, IconButton } from "@mui/material";
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -7,26 +7,22 @@ import SearchIcon from "@mui/icons-material/Search";
 import "./css/sidebar.css";
 import SidebarChat from "./SidebarChat";
 
-function Sidebar({ onSelectChat }) {
-    const [chats, setChats] = useState([
-        { id: 1, name: "React Tutorial", lastMessage: "Ciao, come va?", avatar: "https://i.pravatar.cc/300?img=1" },
-        { id: 2, name: "Chat con Luca", lastMessage: "Ci vediamo dopo!", avatar: "https://i.pravatar.cc/300?img=2" },
-        { id: 3, name: "Giulia", lastMessage: "Ho inviato i documenti.", avatar: "https://i.pravatar.cc/300?img=3" },
-    ]);
+function Sidebar({chats, onSelectChat, addNewChat}) {
 
-    // Funzione per aggiungere una nuova chat
-    const addNewChat = () => {
+    const [searchTerm, setSearchTerm] = useState("");
+
+     // Filtriamo le chat in base al termine di ricerca
+     const filteredChats = chats.filter(chat =>
+        chat.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+
+    const handleAddChat = () => {
         const name = prompt("Inserisci il nome della chat:");
         if (name) {
-            const newChat = {
-                id: chats.length + 1,
-                name: name,
-                lastMessage: "Nuova chat creata!",
-                avatar: `https://i.pravatar.cc/300?img=${chats.length + 1}`,
-            };
-            setChats([...chats, newChat]);
+          addNewChat(name); // Chiamiamo la funzione passata da App.js
         }
-    };
+      };
 
     return (
         <div className="sidebar">
@@ -34,7 +30,7 @@ function Sidebar({ onSelectChat }) {
                 <Avatar />
                 <div className="sidebar__headerRight">
                     <IconButton><DonutLargeIcon /></IconButton>
-                    <IconButton><ChatIcon onClick={addNewChat} /></IconButton>
+                    <IconButton><ChatIcon onClick={handleAddChat} /></IconButton>
                     <IconButton><MoreVertIcon /></IconButton>
                 </div>
             </div>
@@ -42,21 +38,29 @@ function Sidebar({ onSelectChat }) {
             <div className="sidebar__search">
                 <div className="sidebar__searchContainer">
                     <SearchIcon />
-                    <input type="text" placeholder="Cerca o avvia una nuova chat" />
+                    <input
+                        type="text"
+                        placeholder="Cerca una chat..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
             </div>
 
             <div className="sidebar__chats">
-                {chats.map(chat => (
-                    <SidebarChat 
-                        key={chat.id} 
-                        name={chat.name} 
-                        lastMessage={chat.lastMessage} 
-                        avatar={chat.avatar} 
-                        onClick={() => onSelectChat(chat)} 
-                    />
-                ))}
-                <SidebarChat addnewchat onClick={addNewChat} />
+                {filteredChats.length > 0 ? (
+                    filteredChats.map(chat => (
+                        <SidebarChat 
+                            key={chat.id} 
+                            name={chat.name} 
+                            lastMessage={chat.lastMessage} 
+                            avatar={chat.avatar} 
+                            onClick={() => onSelectChat(chat)} 
+                        />
+                    ))
+                ) : (
+                    <p className="no-results">Nessuna chat trovata</p>
+                )}
             </div>
         </div>
     );
