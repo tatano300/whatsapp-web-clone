@@ -7,27 +7,19 @@ import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import EmojiPicker from 'emoji-picker-react';
 import MicIcon from '@mui/icons-material/Mic';
 import "./css/chat.css";
-import StopIcon from "@mui/icons-material/Stop";
+
 
 function Chat({ selectedChat, updateLastMessage }) {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const chatEndRef = useRef(null);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [showSearch, setShowSearch] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+   
 
-    // Stato per la registrazione vocale
-    const [isRecording, setIsRecording] = useState(false);
-    const [mediaRecorder, setMediaRecorder] = useState(null);
-    const [audioChunks, setAudioChunks] = useState([]);
-    const [audioStream, setAudioStream] = useState(null); // Mantiene attivo lo stream audio
-    const [permissionGranted, setPermissionGranted] = useState(false); // Permesso al microfono
+    
 
-// Ottenere il microfono all'avvio per ridurre il ritardo
-useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ audio: true })
-        .then((stream) => setAudioStream(stream))
-        .catch((err) => console.error("Errore nell'accesso al microfono:", err));
-}, []);
 
     useEffect(() => {
         if (selectedChat) {
@@ -65,88 +57,17 @@ useEffect(() => {
       };
 
   
-     // Convertire il blob in Base64
-     const convertBlobToBase64 = (blob) => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-        });
+      const handleSearchClick = () => {
+        setShowSearch(!showSearch);
     };
-    const initializeMicrophone = async () => {
-        try {
-            console.log("Richiesta permessi per il microfono...");
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    
-            setAudioStream(stream);
-            setPermissionGranted(true);
-            console.log("Microfono attivato con successo.");
-        } catch (error) {
-            console.error("Errore nell'accesso al microfono:", error);
-            setPermissionGranted(false);
-        }
+
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value);
     };
+
+
     
-    const startRecording = async () => {
-        if (!permissionGranted || !audioStream) {
-            console.log("Il microfono non è ancora disponibile, provo a richiederlo...");
-            await initializeMicrophone();
-        }
-    
-        if (!audioStream) {
-            console.error("Microfono ancora non disponibile.");
-            return;
-        }
-    
-        try {
-            console.log("Avvio della registrazione...");
-            const recorder = new MediaRecorder(audioStream);
-            setMediaRecorder(recorder);
-            setAudioChunks([]);
-    
-            recorder.ondataavailable = (event) => {
-                setAudioChunks((prevChunks) => [...prevChunks, event.data]);
-            };
-    
-            recorder.start();
-            setIsRecording(true);
-            console.log("Registrazione avviata.");
-        } catch (error) {
-            console.error("Errore nell'avviare la registrazione:", error);
-        }
-    };
-  
-
-    // Ferma la registrazione e salva il messaggio vocale
-    const stopRecording = () => {
-        if (!mediaRecorder) return;
-
-        mediaRecorder.stop();
-        setIsRecording(false);
-
-        mediaRecorder.onstop = async () => {
-            const completeBlob = new Blob(audioChunks, { type: "audio/webm" });
-
-            // Convertiamo il blob in Base64
-            const audioBase64 = await convertBlobToBase64(completeBlob);
-
-            const newMessage = {
-                audio: audioBase64,
-                time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-                sender: "Tu",
-                type: "audio"
-            };
-
-            const updatedMessages = [...messages, newMessage];
-
-            updateLastMessage(selectedChat.id, "🎤 Messaggio vocale");
-            setMessages(updatedMessages);
-            localStorage.setItem(`chat_${selectedChat.id}`, JSON.stringify(updatedMessages));
-
-            setAudioChunks([]);
-        };
-    };
+            
 
     return (
         <div className="chat">
@@ -158,7 +79,19 @@ useEffect(() => {
                 </div>
 
                 <div className="header__right">
-                    <IconButton><SearchIcon /></IconButton>
+                    <IconButton onClick={handleSearchClick}>
+                        <SearchIcon />
+                    </IconButton>
+                    {showSearch && (
+    <input 
+        type="text" 
+        placeholder="Cerca nei messaggi" 
+        value={searchTerm} 
+        onChange={handleSearch} 
+        className="chat__searchInput" 
+        style={{ width: "100%", padding: "8px", borderRadius: "5px", border: "1px solid #ccc" }}
+    />
+)}
                     <IconButton><AttachFileIcon /></IconButton>
                     <IconButton><MoreVertIcon /></IconButton>
                 </div>
@@ -198,9 +131,9 @@ useEffect(() => {
                     />
                     <button type="submit" hidden>Invia</button>
                 </form>
-                <IconButton onClick={isRecording ? stopRecording : startRecording}>
-                    {isRecording ? <StopIcon /> : <MicIcon />}
-                </IconButton>
+                
+               <MicIcon />
+                
             </div>
         </div>
     );
